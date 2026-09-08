@@ -1,0 +1,19 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=docker
+    group_add:
+      - "${RENDER_GID}"
+    volumes:
+      - ${CONFIG_DIR}/plex:/config
+      - ${DATA_DIR}:/data:rw
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/renderD129:/dev/dri/renderD129
+    network_mode: host
+    restart: unless-stopped

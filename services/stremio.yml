@@ -1,0 +1,14 @@
+services:
+  stremio-server:
+    image: stremio/server:latest
+    container_name: stremio-server
+    environment:
+      - NO_CORS=1
+    volumes:
+      - ${CONFIG_DIR}/stremio:/root/.stremio-server
+    ports:
+      - "11470:11470"
+      - "12470:12470"
+    networks:
+      - media
+    restart: unless-stopped

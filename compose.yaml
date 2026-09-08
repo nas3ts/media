@@ -1,0 +1,28 @@
+name: media
+
+include:
+#  - path: ./services/jellyfin.yml
+#    project_directory: .
+#    env_file: ./.env
+  - path: ./services/plex.yml
+    project_directory: .
+    env_file: ./.env
+  - path: ./services/prowlarr.yml
+    project_directory: .
+    env_file: ./.env
+  - path: ./services/sonarr.yml
+    project_directory: .
+    env_file: ./.env
+  - path: ./services/radarr.yml
+    project_directory: .
+    env_file: ./.env
+  - path: ./services/qbittorrent.yml
+    project_directory: .
+    env_file: ./.env
+  - path: ./services/flaresolverr.yml
+    project_directory: .
+    env_file: ./.env
+
+networks:
+  media:
+    name: media
