@@ -1,0 +1,7 @@
+services:
+  plex:
+    group_add:
+      - "${RENDER_GID}"
+    devices:
+      - ${RENDER_DRI_PRIMARY}:/dev/dri/renderD128
+      - ${RENDER_DRI_SECONDARY}:/dev/dri/renderD129

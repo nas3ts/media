@@ -10,6 +10,8 @@ Compose setup: one file per service in `services/`, included by the root
 ~/Areas/Media/
 ├── .env                  # shared vars: PUID/PGID/TZ/paths/DNS
 ├── compose.yaml          # root — includes services/*.yml + defines network
+├── compose.gpu.yml       # optional GPU override (device paths, render group)
+├── media.sh              # docker compose wrapper (auto-adds GPU override)
 ├── services/             # one modular compose fragment per service
 ├── config/               # persistent app state (jellyfin, plex, *arr, qbt)
 └── data/                 # single bind mount → /data inside containers
@@ -42,14 +44,23 @@ reproducible from a clone.
 
 ## Usage
 
+`media.sh` wraps `docker compose`. It automatically adds the GPU override
+(`compose.gpu.yml`) when the render device from `.env` exists — so the same
+command works on GPU and GPU-less hosts:
+
 ```bash
 cd ~/Areas/Media
-docker compose up -d              # everything
-docker compose up -d qbittorrent  # just one service
-docker compose ps                 # status
-docker compose logs -f <service>  # logs
-docker compose down               # stop (state persists in config/ and data/)
+./media.sh up -d              # everything
+./media.sh up -d qbittorrent  # just one service
+./media.sh ps                 # status
+./media.sh logs -f <service>  # logs
+./media.sh down               # stop (state persists in config/ and data/)
 ```
+
+Without a GPU, Plex starts in software-transcode mode; set `NO_GPU=1` to force
+that even when a render device exists. The underlying command is
+`docker compose -f compose.yaml [-f compose.gpu.yml] <args>`, so you can also
+run `docker compose` directly on either host type.
 
 ## Ports
 
@@ -91,8 +102,10 @@ docker compose down               # stop (state persists in config/ and data/)
   downloads import instantly without copying.
 - **DNS**: indexer/torrent containers use Cloudflare (1.1.1.1) + Quad9 (9.9.9.9)
   directly to sidestep ISP-level blocks; see `dns:` in service files.
-- **Transcoding**: both render nodes are passed through (`renderD128` = Intel HD
-  630 QuickSync, `renderD129` = AMD Radeon Pro).
+- **Transcoding**: GPU device paths live in `compose.gpu.yml` (not the base
+  services), relative to this host (`renderD128` = Intel HD 630 QuickSync,
+  `renderD129` = AMD Radeon Pro). `media.sh` includes it only when the device
+  from `.env` exists; edit `.env` per host (e.g. NVIDIA uses `/dev/nvidia*`).
 - **Archiving**: when content is "done", move it out of `data/` yourself — the
   media servers never see anything outside this Area.
 - **Backups**: `config/` holds all app state; `data/` holds media. Back up
