@@ -13,7 +13,7 @@ services:
       - ${CONFIG_DIR}/plex:/config
       - ${DATA_DIR}:/data:rw
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
-      - /dev/dri/renderD129:/dev/dri/renderD129
+      - ${RENDER_DRI_PRIMARY}:/dev/dri/renderD128
+      - ${RENDER_DRI_SECONDARY}:/dev/dri/renderD129
     network_mode: host
     restart: unless-stopped
