@@ -1,13 +1,13 @@
 # Media Server
 
-Dockerized media stack managed under the PARA system (`~/Areas/Media`). Modular
+Dockerized media stack. Modular
 Compose setup: one file per service in `services/`, included by the root
 `compose.yaml`.
 
 ## Layout
 
 ```
-~/Areas/Media/
+~/Media/
 ├── .env                  # shared vars: PUID/PGID/TZ/paths/DNS
 ├── compose.yaml          # root — includes services/*.yml + defines network
 ├── compose.gpu.yml       # optional GPU override (device paths, render group)
