@@ -2,6 +2,7 @@ services:
   flaresolverr:
     image: flaresolverr/flaresolverr:latest
     container_name: flaresolverr
+    hostname: flaresolverr
     environment:
       - LOG_LEVEL=info
       - TZ=${TZ}
