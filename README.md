@@ -15,9 +15,10 @@ Compose setup: one file per service in `services/`, included by the root
 ├── services/             # one modular compose fragment per service
 ├── config/               # persistent app state (plex, prowlarr, qbittorrent, radarr, sonarr)
 └── data/                 # single bind mount → /data inside containers
-    ├── torrents/
-    │   ├── incomplete/
-    │   └── complete/{movies,tv}/       # category targets for *arr import
+    ├── downloads/        # qBittorrent download staging
+    │   ├── incomplete/   # qBittorrent temp / in-progress path
+    │   ├── movies/       # completed movie downloads (*arr imports from here)
+    │   └── tv/           # completed TV downloads (*arr imports from here)
     ├── movies/           # Radarr library (hardlinked imports)
     ├── tv/              # Sonarr library
     └── _recycle/         # qBittorrent trash (empty via the app UI)
@@ -29,18 +30,18 @@ All containers share one bridge network `media` and address each other by name
 ## Fresh clone setup
 
 `config/`, `data/`, and `.env` are git-ignored (they hold runtime state and
-credentials), so a fresh clone starts without them. Docker will auto-create the
-bind-mount directories on first `up`, but as **root** — which breaks the apps
-running as `PUID`/`PGID` (default 1000). Create and own the dirs yourself first:
+credentials), so a fresh clone starts without them. `media.sh` auto-creates
+the bind-mount directories (`config/`, `data/`, `data/downloads/{movies,tv,incomplete}`)
+and chowns them to `PUID:PGID` (default 1000:1000) on every run, so you don't
+need to create them manually — Docker would otherwise create them as root and
+break the apps.
 
 ```bash
 cp .env.example .env              # then edit values if needed
-mkdir -p config data
-sudo chown -R <PUID>:<PGID> config data   # e.g. 1000:1000
+./media.sh up -d                  # creates & owns dirs, then brings the stack up
 ```
 
-Once `.env` exists and the dirs are owned correctly, the stack is fully
-reproducible from a clone.
+Once `.env` exists, the stack is fully reproducible from a clone.
 
 ## Usage
 
@@ -77,15 +78,15 @@ run `docker compose` directly on either host type.
 ## First-run wiring checklist
 
 1. **qBittorrent** (:8080) — temp password from `docker logs qbittorrent`.
-   Save paths are preconfigured: in-progress → `/data/torrents/incomplete`,
-   finished → `/data/torrents/complete` (*arr categories land in `complete/{movies,tv}`).
+   Save paths are preconfigured: in-progress → `/data/downloads/incomplete`,
+   finished → `/data/downloads/{movies,tv}` via categories (default `/data/downloads`).
 2. **Prowlarr** (:9696) — add indexers; set FlareSolverr proxy tag where needed.
    Settings → Apps: add Sonarr/Radarr (use API keys from their
    Settings → General pages). Indexers sync to all automatically.
 3. **Radarr** (:7878) — Root folder `/data/movies`; add qBT client
-   (`http://qbittorrent:8080`, category `movies`, save path `/data/torrents/complete/movies`).
+   (`http://qbittorrent:8080`, category `movies`, save path `/data/downloads/movies`).
 4. **Sonarr** (:8989) — same as Radarr with `/data/tv`, category `tv`,
-   `/data/torrents/complete/tv`. Enable "Use hardlinks instead of copy" (default).
+   save path `/data/downloads/tv`. Enable "Use hardlinks instead of copy" (default).
 5. **Plex** (:32400/web) — sign in with Plex account once, then claim server;
    libraries on `/data`; enable hardware transcoding (requires Plex Pass).
 6. **Jellyfin** (:8096) — optional; enable it first (see Notes), then add
