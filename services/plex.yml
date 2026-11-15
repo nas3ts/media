@@ -10,5 +10,9 @@ services:
     volumes:
       - ${CONFIG_DIR}/plex:/config
       - ${DATA_DIR}:/data:rw
+      # Client profile for the Hisense VIDAA app (see profiles/vidaa.xml).
+      # Without it Plex cannot resolve a profile for platform=vidaa and every
+      # video transcode returns HTTP 400.
+      - ./services/profiles/vidaa.xml:/usr/lib/plexmediaserver/Resources/Profiles/vidaa.xml:ro
     network_mode: host
     restart: unless-stopped
