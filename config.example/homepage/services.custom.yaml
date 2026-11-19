@@ -1,0 +1,15 @@
+---
+# Add your own Homepage tiles here. media.sh appends this file to the generated
+# services.yaml on every run, so these entries survive regeneration.
+#
+# Use the same group/service format as Homepage's services.yaml:
+#
+# - System:
+#     - My Service:
+#         icon: my-service.png
+#         href: http://localhost:1234
+#         description: My custom service
+#         server: local
+#         container: my-container
+#
+# See https://gethomepage.dev/configs/services/ for all options.

@@ -1,0 +1,24 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=localhost:3005,127.0.0.1:3005
+      - PUID=${PUID}
+      - PGID=${DOCKER_GID}
+      - TZ=${TZ}
+      - HOMEPAGE_VAR_SONARR_APIKEY=${SONARR_APIKEY}
+      - HOMEPAGE_VAR_RADARR_APIKEY=${RADARR_APIKEY}
+      - HOMEPAGE_VAR_PROWLARR_APIKEY=${PROWLARR_APIKEY}
+      - HOMEPAGE_VAR_PLEX_TOKEN=${PLEX_TOKEN}
+      - HOMEPAGE_VAR_QBITTORRENT_APIKEY=${QBITTORRENT_APIKEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${CONFIG_DIR}/homepage:/app/config
+      - ${DOCKER_SOCK}:/var/run/docker.sock:ro
+    ports:
+      - "3005:3000"
+    networks:
+      - media
+    restart: unless-stopped

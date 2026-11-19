@@ -1,0 +1,73 @@
+---
+# Reference sample only. media.sh generates config/homepage/services.yaml from
+# the active Compose services; put manual additions in services.custom.yaml.
+# For configuration options and examples, see:
+# https://gethomepage.dev/configs/services/
+
+- Media:
+    - Plex:
+        icon: plex.png
+        href: http://localhost:32400/web
+        description: Media server
+        server: local
+        container: plex
+        widget:
+          type: plex
+          url: http://host.docker.internal:32400
+          key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
+
+- Downloads:
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: http://localhost:8080
+        description: Torrent client
+        server: local
+        container: qbittorrent
+        # Enable after setting QBITTORRENT_APIKEY in .env. An empty key causes
+        # repeated failed logins and qBittorrent bans Homepage's IP.
+        # widget:
+        #   type: qbittorrent
+        #   url: http://qbittorrent:8080
+        #   key: "{{HOMEPAGE_VAR_QBITTORRENT_APIKEY}}"
+
+- Automation:
+    - Sonarr:
+        icon: sonarr.png
+        href: http://localhost:8989
+        description: TV series management
+        server: local
+        container: sonarr
+        widget:
+          type: sonarr
+          url: http://sonarr:8989
+          key: "{{HOMEPAGE_VAR_SONARR_APIKEY}}"
+
+    - Radarr:
+        icon: radarr.png
+        href: http://localhost:7878
+        description: Movie management
+        server: local
+        container: radarr
+        widget:
+          type: radarr
+          url: http://radarr:7878
+          key: "{{HOMEPAGE_VAR_RADARR_APIKEY}}"
+
+    - Prowlarr:
+        icon: prowlarr.png
+        href: http://localhost:9696
+        description: Indexer management
+        server: local
+        container: prowlarr
+        widget:
+          type: prowlarr
+          url: http://prowlarr:9696
+          key: "{{HOMEPAGE_VAR_PROWLARR_APIKEY}}"
+
+- System:
+    - Homepage:
+        icon: homepage.png
+        href: http://localhost:3005
+        description: Dashboard
+        server: local
+        container: homepage
