@@ -22,6 +22,9 @@ include:
   - path: ./services/flaresolverr.yml
     project_directory: .
     env_file: ./.env
+  - path: ./services/homepage.yml
+    project_directory: .
+    env_file: ./.env
 
 networks:
   media:
